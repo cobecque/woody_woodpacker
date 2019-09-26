@@ -24,10 +24,8 @@ int		put_shit(int nb, char c)
 
 int		nb_pres(t_arg p)
 {
-	int		i;
 	int		to_print;
 
-	i = 0;
 	to_print = 0;
 	if (p.letter == 's' || p.letter == 'c')
 		return (0);

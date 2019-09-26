@@ -64,10 +64,8 @@ wchar_t		*wchar_to_pointer(wchar_t w)
 
 int			ft_putwstr(wchar_t *wstr, char l)
 {
-	int		i;
 	int		printed;
 
-	i = 0;
 	printed = 0;
 	if (l == 'C' && *wstr == '\0')
 		return (1);

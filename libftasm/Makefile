@@ -41,6 +41,10 @@ OBJ_PATH = $(addprefix $(OBJ_DIR)/,$(SRC_NAME:.s=.o))
 
 CC = nasm
 FLAGS = -f macho64
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	FLAGS = -f elf64
+endif
 
 all :
 	@mkdir -p ./obj
@@ -52,6 +56,7 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.s
 
 $(NAME): $(OBJ_PATH)
 	@ar -q $(NAME) $(OBJ_PATH) 2>/dev/null
+	@ranlib $(NAME)
 	@printf $(C_CYA) "        [ ✔ ] compiled -> $(NAME)"
 
 clean :

@@ -99,6 +99,7 @@ $(OBJ_DIR)/%.o:$(SRC_DIR)/%.c
 
 $(NAME): $(OBJ_PATH)
 	@ar -q $(NAME) $(OBJ_PATH) 2>/dev/null
+	@ranlib $(NAME)
 	@printf $(C_CYA) "        [ ✔ ] compiled -> $(NAME)"
 
 clean :

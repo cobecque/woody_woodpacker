@@ -18,5 +18,6 @@ int			main(void)
 	printf("%lld\n", (unsigned long long)sizeof(ELF64_Ehdr));
 	printf("___WOODY___\n");
 	printf("Hello World!\n");
+	printf("testing!\n");
 	return (0);
 }
