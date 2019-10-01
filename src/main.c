@@ -5,41 +5,87 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/18 11:51:14 by cobecque          #+#    #+#             */
-/*   Updated: 2019/08/20 14:21:16 by cobecque         ###   ########.fr       */
+/*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
+/*   Updated: 2019/10/01 10:08:23 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "woody_woodpacker.h"
+#include "woody.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "sys/mman.h"
 
-void		ft_putstrfd_bin(int fd, char *str, size_t size)
-{
-	write(fd, str, size);
-}
+#define buff_size 1
 
-int			main(int argc, char **argv)
+void		init_env(t_env *env, char *file)
 {
-	char	*file;
-	size_t	size;
-	int		off;
 	int		fd;
+	char	buff[buff_size];
+	int		ret;
 	int		i;
+	int		off;
 
 	i = 0;
-	if (argc != 2)
+	ft_bzero(env, sizeof(env));
+	env->file = NULL;
+	if ((fd = open(file, O_RDONLY)) != -1)
+	{
+		off = lseek(fd, 0, SEEK_END);
+		env->file = malloc(off + i);
+		off = lseek(fd, 0, SEEK_SET);
+		while ((ret = read(fd, &buff, buff_size)) > 0)
+		{
+			ft_memcpy(env->file + i, &buff, ret);
+			i += ret;
+		}
+		close(fd);
+	}
+}
+
+int			main(int ac, char **av)
+{
+	t_env		e;
+	int			i;
+	Elf64_Sym	**sym;
+	int			nb_sym;
+	int			j;
+	
+	i = 0;
+	if (ac != 2)
 		return (0);
-	fd = open(argv[1], O_RDONLY);
-	off = lseek(fd, 0, SEEK_END);
-	size = off;
-	file = mmap(0, off + 1, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	off = lseek(fd, 0, SEEK_SET);
-	while (read(fd, &file[i], 1) > 0)
-		i++;
-	close(fd);
-	fd = open("woody", O_CREAT | O_WRONLY);
-	ft_putstrfd_bin(fd, file, size);
-	close(fd);
+	init_env(&e, av[1]);
+	if (e.file != NULL)
+	{
+		e.header = e.file;
+		e.phdr = (Elf64_Phdr **)malloc(sizeof(Elf64_Phdr *) * e.header->e_phnum);
+		while (i < e.header->e_phnum)
+		{
+			e.phdr[i] = e.file + e.header->e_phoff + (e.header->e_phentsize * i);
+			printf("%d %lx\n", e.phdr[i]->p_type, e.phdr[i]->p_offset);
+			i++;
+		}
+		printf("\n\nHELLO DEAR WE ARE LEAVING\n\n\n");
+		i = 0;
+		e.shdr = (Elf64_Shdr **)malloc(sizeof(Elf64_Shdr *) * e.header->e_shnum);
+		while (i < e.header->e_shnum)
+		{
+			e.shdr[i] = e.file + e.header->e_shoff + (e.header->e_shentsize * i);
+			printf("%d %lx\n", e.shdr[i]->sh_type, e.shdr[i]->sh_offset);
+			if (e.shdr[i]->sh_type == SHT_SYMTAB)
+			{
+				nb_sym = e.shdr[i]->sh_size / sizeof(Elf64_Sym);
+				sym = (Elf64_Sym **)malloc(sizeof(Elf64_Sym *) * nb_sym);
+				j = 0;
+				while (j < nb_sym)
+				{
+					sym[j] = e.file + e.shdr[i]->sh_offset + sizeof(Elf64_Sym) * j;
+					printf("%d : NBR = %d et fuk adraas = %d\n", j, sym[j]->st_shndx, sym[j]->st_info);
+					j++;
+				}
+			}
+			i++;
+		}
+	}
 	return (0);
 }
+

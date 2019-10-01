@@ -1,21 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   ramdom.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/08/20 14:17:27 by cobecque          #+#    #+#             */
-/*   Updated: 2019/09/29 00:17:07 by cobecque         ###   ########.fr       */
+/*   Created: 2019/10/01 09:55:01 by cobecque          #+#    #+#             */
+/*   Updated: 2019/10/01 09:56:09 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 
-int			main(void)
+char *yolo = "feoifje";
+
+int		main(void)
 {
-	printf("___WOODY___\n");
-	printf("Hello World!\n");
-	printf("testing!\n");
+	int		i;
+
+	i = 1541563;
+	printf("random is me\n");
+	printf("%d\n", i);
 	return (0);
 }

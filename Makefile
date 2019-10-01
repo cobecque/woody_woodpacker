@@ -6,7 +6,7 @@
 #    By: cobecque <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/18 11:55:23 by cobecque          #+#    #+#              #
-#    Updated: 2019/08/18 11:56:23 by cobecque         ###   ########.fr        #
+#    Updated: 2019/10/01 07:21:35 by cobecque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ INCDIR =	./includes
 
 SRC =	main.c
 
-INC =	woody_woodpacker.h
+INC =	woody.h
 
 SRCS =		$(SRC:%=$(SRCDIR)/%)
 
@@ -81,7 +81,7 @@ all:
 $(NAME): $(OBJS) $(LIB)
 	@$(MAKE) printname
 	@printf "%-15s%s\n" Linking $@
-	@$(CC) $(CFLAGS) $^ -o $@ $(LFLAGS)
+	@$(CC) $(FLAGS) $^ -o $@ $(LFLAGS)
 	@printf "$(GREEN)"
 	@echo "Compilation done !"
 	@printf "$(RES)"
@@ -111,6 +111,7 @@ fclean: clean
 	@make fclean -C $(LIBPDIR)
 	@make fclean -C $(LIBADIR)
 	@$(MAKE) printname
+	@rm -rf ./woody
 	@echo Suppressing $(NAME)
 	@printf "$(RED)"
 	rm -rf $(NAME)
