@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/01 10:08:23 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/10/05 15:07:03 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,32 +57,37 @@ int			main(int ac, char **av)
 	if (e.file != NULL)
 	{
 		e.header = e.file;
+		printf("SECTION HEADER :\n");
 		e.phdr = (Elf64_Phdr **)malloc(sizeof(Elf64_Phdr *) * e.header->e_phnum);
 		while (i < e.header->e_phnum)
 		{
 			e.phdr[i] = e.file + e.header->e_phoff + (e.header->e_phentsize * i);
-			printf("%d %lx\n", e.phdr[i]->p_type, e.phdr[i]->p_offset);
+			printf("type = %d offset = %lx\n", e.phdr[i]->p_type, e.phdr[i]->p_offset);
 			i++;
 		}
-		printf("\n\nHELLO DEAR WE ARE LEAVING\n\n\n");
+		printf("\n\nSECTION :\n");
 		i = 0;
 		e.shdr = (Elf64_Shdr **)malloc(sizeof(Elf64_Shdr *) * e.header->e_shnum);
 		while (i < e.header->e_shnum)
 		{
 			e.shdr[i] = e.file + e.header->e_shoff + (e.header->e_shentsize * i);
-			printf("%d %lx\n", e.shdr[i]->sh_type, e.shdr[i]->sh_offset);
+			printf("%2d : type = %d offset = %lx\n", i, e.shdr[i]->sh_type, e.shdr[i]->sh_offset);
 			if (e.shdr[i]->sh_type == SHT_SYMTAB)
 			{
+				printf("\nSection's symbol\n");
 				nb_sym = e.shdr[i]->sh_size / sizeof(Elf64_Sym);
 				sym = (Elf64_Sym **)malloc(sizeof(Elf64_Sym *) * nb_sym);
 				j = 0;
 				while (j < nb_sym)
 				{
 					sym[j] = e.file + e.shdr[i]->sh_offset + sizeof(Elf64_Sym) * j;
-					printf("%d : NBR = %d et fuk adraas = %d\n", j, sym[j]->st_shndx, sym[j]->st_info);
+					printf("%2d : idx = %6d et type_symbol = %d\n", j, sym[j]->st_shndx, sym[j]->st_info);
 					j++;
 				}
+				printf("\nEnd of symbol\n\n");
 			}
+			else if (e.shdr[i]->sh_type == SHT_DYNSYM)
+				printf("Cool\n");
 			i++;
 		}
 	}

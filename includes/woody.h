@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/01 08:16:46 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/10/05 16:17:43 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 		Elf64_Ehdr	*header;
 		Elf64_Phdr	**phdr;
 		Elf64_Shdr	**shdr;
+		Elf64_Sym	**sym;
 	}				t_env;
 #endif
 
