@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/05 17:26:32 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/06 18:45:44 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,16 @@
 		Elf64_Sym	**sym;
 		Elf64_Dyn	**dyn;
 	}				t_env;
+
+
+/*
+** fill_struct.c
+*/
+void		init_env(t_env *env, char *file);
+void		fill_program_header(t_env *e);
+void		fill_dynamics(t_env *e, int i);
+void		fill_section_header(t_env *e);
 #endif
+
 
 #endif
