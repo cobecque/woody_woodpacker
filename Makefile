@@ -33,7 +33,8 @@ INCDIR =	./includes
 # List all sources, objects and includes files of 'libft'.
 
 SRC =	main.c \
-	fill_struc.c
+	fill_struc.c \
+	section.c
 
 INC =	woody.h
 

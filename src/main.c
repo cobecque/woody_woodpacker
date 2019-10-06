@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/06 18:48:13 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/06 19:57:27 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,13 @@ int			main(int ac, char **av)
 	if (ac != 2)
 		return (0);
 	init_env(&e, av[1]);
-	if (e.file != NULL)
+	if (e.file.content != NULL)
 	{
-		e.header = e.file;
+		e.header = e.file.content;
 		fill_program_header(&e);
 		fill_section_header(&e);
-		printf("OEP = 0x%lx entsize = %d\n", e.header->e_entry, e.header->e_phentsize);
+		printf("OEP = 0x%lx entsize = %d\n", e.header->e_entry, e.header->e_shentsize);
+		creat_new_section(&e);
 	}
 	return (0);
 }
