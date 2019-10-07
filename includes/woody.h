@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/07 15:15:18 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/07 15:42:54 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 	#include <elf.h>
 	typedef struct	s_file_inf
 	{
-		void		*content;
 		int			size;
+		void		*content;
 	}				t_file_inf;
 
 	typedef struct	s_env

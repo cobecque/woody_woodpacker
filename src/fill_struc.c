@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:32:57 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/07 14:40:35 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/07 16:50:26 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #if VERB == 1
 # define DYN_VERB 0
 # define SYM_VERB 0
-# define HDR_VERB 1
+# define HDR_VERB 0
 # define SCT_VERB 1
 #else                    //do not change that field
 # define DYN_VERB 0
