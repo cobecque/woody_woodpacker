@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/06 19:35:05 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/07 15:15:18 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "libftasm.h"
 #ifdef __linux__
 	#include <elf.h>
-	typedef struct	file_inf
+	typedef struct	s_file_inf
 	{
 		void		*content;
 		int			size;
@@ -26,6 +26,7 @@
 	typedef struct	s_env
 	{
 		t_file_inf	file;
+		t_file_inf	fwoody;
 		Elf64_Ehdr	*header;
 		Elf64_Phdr	**phdr;
 		Elf64_Shdr	**shdr;

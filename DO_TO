@@ -1,5 +1,8 @@
 1) Modifier entry point
 2) +1 e_shnum (nb entree section)
+2.1) Modifie shoff
+2.2) Modifie offset derniere sectioni
+
 3) Cree nouvelle section :
 name = offset dansla table --> Packer
 type = SHT_PROGBITS
