@@ -1,0 +1,14 @@
+1) Modifier entry point
+2) +1 e_shnum (nb entree section)
+3) Cree nouvelle section :
+name = offset dansla table --> Packer
+type = SHT_PROGBITS
+flags = X
+addr = apres eh_frame addr (?)
+offset = 
+size = 
+link = 
+info = 
+addralign = 
+ent_size = 
+
