@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:32:57 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/07 16:50:26 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/07 17:26:30 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void			fill_section_header(t_env *e)
 	i = 0;
 	if (SCT_VERB == 1)
 		printf("\n\nSECTION HEADER:\n");
-	e->shdr = (Elf64_Shdr **)malloc(sizeof(Elf64_Shdr *) * e->header->e_shnum);
+	e->shdr = (Elf64_Shdr **)malloc(sizeof(Elf64_Shdr *) * e->header->e_shnum + 1);
 	while (i < e->header->e_shnum)
 	{
 		e->shdr[i] = e->file.content + e->header->e_shoff + (e->header->e_shentsize * i);

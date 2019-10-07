@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:54:17 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/07 17:11:17 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/07 18:09:27 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,16 +71,19 @@ void			shift_section(t_env *e)
 	memset(e->fwoody.content + e->header->e_shoff, 0, 16);
 	ft_memcpy(e->fwoody.content + e->shdr[e->header->e_shstrndx]->sh_offset + e->shdr[e->header->e_shstrndx]->sh_size, ".loader", 7);
 	size = e->shdr[e->header->e_shstrndx]->sh_size + 16;
-	memset(e->fwoody.content + e->header->e_shoff + e->header->e_shentsize * e->header->e_shstrndx + 28, size, sizeof(uint32_t));
 	e->header->e_shoff += 16;
+	ft_memcpy(e->fwoody.content + e->header->e_shoff + e->header->e_shentsize * e->header->e_shstrndx + 32, &size, sizeof(uint32_t));
+	printf("--> %x %lx\n", size, e->header->e_shoff + e->header->e_shentsize * e->header->e_shstrndx + 32);
 	ft_memcpy(e->fwoody.content + e->header->e_shoff, sh_cpy, e->header->e_shentsize * e->header->e_shnum);
 }
 
 void			creat_new_section(t_env *e)
 {
 	int				fd;
-	Elf64_Shdr		loader;
+	int				i;
+	//Elf64_Shdr		loader;
 
+	i = 0;
 	//section_name(e);
 	e->fwoody.size = e->file.size + e->header->e_shentsize + 16;
 	if (!(e->fwoody.content = (void *)malloc(e->fwoody.size)))
@@ -90,10 +93,19 @@ void			creat_new_section(t_env *e)
 	memset(e->fwoody.content + 60, e->header->e_shnum + 1, 1);
 	e->fwoody.size = e->file.size + e->header->e_shentsize + 16;
 	fd = open("woody", O_CREAT | O_RDWR, 0777);
-	ft_memcpy(&loader, e->shdr[30], sizeof(Elf64_Shdr));
-	ft_memcpy(e->fwoody.content + e->file.size, &loader, sizeof(Elf64_Shdr));
+	//ft_memcpy(&loader, e->shdr[30], sizeof(Elf64_Shdr));
+//	ft_memcpy(e->fwoody.content + e->file.size, &loader, sizeof(Elf64_Shdr));
 	shift_section(e);
+	//e->shdr[e->header->e_shnum - 1] = &loader;
+	printf("-->%d\n", e->shdr[1]->sh_name);
 	//LA FIN
+	while (i < e->header->e_shnum - 1)
+	{
+		ft_memcpy(e->fwoody.content + e->header->e_shoff + e->header->e_shentsize * i, e->shdr[i], e->header->e_shentsize);
+		printf("%d et %lx\n", e->shdr[i]->sh_name, e->header->e_shoff + e->header->e_shentsize * i);
+		i++;
+	}
+	//memcpy(e->fwoody.content + e->header->e_shoff, e->shdr, e->header->e_shentsize * e->header->e_shnum);
 	ft_putbin_fd(fd, (char *)e->fwoody.content, e->fwoody.size);
 	close(fd);
 }
