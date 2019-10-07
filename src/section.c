@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:54:17 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/07 19:08:58 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/10/07 19:57:02 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,21 +80,30 @@ void			creat_new_section(t_env *e)
 		return ;
 	printf("coucou\n");
 	memcpy(e->fwoody.content, e->file.content, e->file.size);//e->file.size);
-	memset(e->fwoody.content + 60, e->header->e_shnum + 1, 1);
+	e->header->e_shnum += 1;
 	e->fwoody.size = e->file.size + e->header->e_shentsize + 16;
 	fd = open("woody", O_CREAT | O_RDWR, 0777);
 	ft_memcpy(&loader, e->shdr[30], sizeof(Elf64_Shdr));
+	loader.sh_name = e->shdr[e->header->e_shstrndx]->sh_size;
+	loader.sh_type = SHT_NULL;
+	loader.sh_flags = SHF_ALLOC | SHF_EXECINSTR;
+	loader.sh_addr = 0;
+	loader.sh_offset = 0;
+	loader.sh_size = 0;
+	loader.sh_link = 0;
+	loader.sh_info = 0;
+	loader.sh_addralign = 0;
+	loader.sh_entsize = 0;
 	shift_section(e);
 	e->shdr[e->header->e_shstrndx]->sh_size += 16;
-	printf("e->shdr %d et e->header->e_shnum %d\n", e->shdr[e->header->e_shnum - 1]->sh_name, e->header->e_shnum);
-	e->shdr[e->header->e_shnum] = &loader;
-	//LA FIN
-	while (i <= e->header->e_shnum)
+	e->shdr[e->header->e_shnum - 1] = &loader;
+	while (i <= e->header->e_shnum - 1)
 	{
-		memcpy(e->fwoody.content + e->header->e_shoff + (e->header->e_shentsize * i), e->shdr[i], sizeof(Elf64_Shdr));
-		printf("%d %d %lx\n", i, e->shdr[i]->sh_name, e->header->e_shoff + (e->header->e_shentsize * i));
+		memcpy(e->fwoody.content + e->header->e_shoff + (e->header->e_shentsize * i), e->shdr[i], e->header->e_shentsize);
+		printf("%d %d %lx %lx\n", i, e->shdr[i]->sh_name, e->header->e_shoff + (e->header->e_shentsize * i), e->shdr[i]->sh_offset);
 		i++;
 	}
+	memcpy(e->fwoody.content, e->header, e->header->e_ehsize);
 	ft_putbin_fd(fd, (char *)e->fwoody.content, e->fwoody.size);
 	close(fd);
 }
