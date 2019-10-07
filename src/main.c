@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/06 19:57:27 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/07 10:52:36 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int			main(int ac, char **av)
 		e.header = e.file.content;
 		fill_program_header(&e);
 		fill_section_header(&e);
-		printf("OEP = 0x%lx entsize = %d\n", e.header->e_entry, e.header->e_shentsize);
+		printf("OEP = 0x%lx entsize = %d strndx = %d\n", e.header->e_entry, e.header->e_shentsize, e.header->e_shstrndx);
 		creat_new_section(&e);
 	}
 	return (0);
