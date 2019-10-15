@@ -55,6 +55,7 @@ uint8_t				*key_to_hexa(unsigned char *entry, int *size);
 		Elf64_Shdr	**shdr;
 		Elf64_Sym	**sym;
 		Elf64_Dyn	**dyn;
+		char		**section_name;
 	}				t_env;
 
 
