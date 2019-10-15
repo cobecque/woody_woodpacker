@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/14 21:00:43 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/15 13:23:51 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ t_parser	pars_information(int ac, char **av)
 				inf.key = av[exc];
 			exc++;
 		}
+		else
+			inf.key = NULL;
 	}
 	if (exc < ac)
 		inf.exec = av[exc];
@@ -100,8 +102,9 @@ int			main(int ac, char **av)
 	if (!inf.exec)
 		return (0);
 	printf("algo = %d\nkey = %s\nexec = %s\n", inf.algo, inf.key, inf.exec);
-	if (init_rc4(&var, inf) == -1)
+	if (inf.key && init_rc4(&var, inf) == -1)
 		return (0);
+	printf("%s\n", inf.exec);
 	init_env(&e, inf.exec);
 	if (e.file.content != NULL)
 	{
