@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:32:57 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/07 17:26:30 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/14 18:46:21 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void			init_env(t_env *env, char *file)
 		}
 		close(fd);
 	}
+	else
+		printf("%s: No such file or directory\n", file);
 }
 
 void			fill_program_header(t_env *e)

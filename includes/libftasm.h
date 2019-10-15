@@ -10,7 +10,7 @@
 # include <sys/stat.h>
 
 void    ft_puts(char *str);
-int     ft_strlen(char *str);
+int     _ft_strlen(char *str);
 void    ft_bzero(void *addr, size_t size);
 int     ft_isalpha(int c);
 int     ft_isdigit(int c);
