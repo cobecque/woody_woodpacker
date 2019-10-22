@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:54:17 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/15 14:14:31 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/10/22 20:01:18 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ void			fill_loader_section(t_env *e, Elf64_Shdr *loader)
 	char			buf[buff_size];
 	void			*file;
 	int				fd;
+	uint64_t		entry;
 
 	i = 0;
 	last = 0;
@@ -100,8 +101,8 @@ void			fill_loader_section(t_env *e, Elf64_Shdr *loader)
 		}
 		i++;
 	}
-	loader->sh_addr = e->shdr[last]->sh_addr + e->shdr[last]->sh_size;
-	loader->sh_offset = e->shdr[last]->sh_offset + e->shdr[last]->sh_size;
+	loader->sh_addr = e->shdr[last]->sh_addr;
+	loader->sh_offset = e->shdr[last]->sh_offset;
 	loader->sh_name = e->shdr[e->header->e_shstrndx]->sh_size;
 	loader->sh_type = SHT_PROGBITS;
 	loader->sh_flags = SHF_ALLOC | SHF_EXECINSTR;
@@ -129,30 +130,41 @@ void			fill_loader_section(t_env *e, Elf64_Shdr *loader)
 	}
 	close(fd);
 
-	memcpy(e->fwoody.content + loader->sh_offset, file + 0x40, 0x15); //remplissage de la section avec les premiers octets du .o
+	memset(e->fwoody.content + loader->sh_offset, 0x52, 1);
+	memcpy(e->fwoody.content + loader->sh_offset + 0x01, file + 0x40, 0x15); //remplissage de la section avec les premiers octets du .o
 
 	addr -= loader->sh_addr;
-	memcpy(e->fwoody.content + loader->sh_offset + 0xc, &addr, 4);  //on calcul et on rajoute l'addresse du puts dans le call
+	memcpy(e->fwoody.content + loader->sh_offset + 0xd, &addr, 4);  //on calcul et on rajoute l'addresse du puts dans le call
 
 	addr = 0x17 - 0xb;
-	memcpy(e->fwoody.content + loader->sh_offset + 0x7, &addr, 4); //on calcul l'adresse relative pour aller chercher les info du puts et on les mets dans le lea
+	memcpy(e->fwoody.content + loader->sh_offset + 0x8, &addr, 4); //on calcul l'adresse relative pour aller chercher les info du puts et on les mets dans le lea
 
 	addr = 0x0feb;
-	memcpy(e->fwoody.content + loader->sh_offset + 0x15, &addr, 2); //on jump derriere le message
+	memcpy(e->fwoody.content + loader->sh_offset + 0x16, &addr, 2); //on jump derriere le message
 
-	memset(e->fwoody.content + loader->sh_offset + 0x17, 0x2e, 4);
-	memset(e->fwoody.content + loader->sh_offset + 0x1b, 0x57, 1);
-	memset(e->fwoody.content + loader->sh_offset + 0x1c, 0x4f, 2);
-	memset(e->fwoody.content + loader->sh_offset + 0x1e, 0x44, 1);
-	memset(e->fwoody.content + loader->sh_offset + 0x1f, 0x59, 1);
-	memset(e->fwoody.content + loader->sh_offset + 0x20, 0x2e, 4);
-	memset(e->fwoody.content + loader->sh_offset + 0x24, 0x0a, 1);
-	memset(e->fwoody.content + loader->sh_offset + 0x25, 0x00, 1); // on ecrite le WOODY en message
+	memset(e->fwoody.content + loader->sh_offset + 0x18, 0x2e, 4);
+	memset(e->fwoody.content + loader->sh_offset + 0x1c, 0x57, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x1d, 0x4f, 2);
+	memset(e->fwoody.content + loader->sh_offset + 0x1f, 0x44, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x20, 0x59, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x21, 0x2e, 4);
+	memset(e->fwoody.content + loader->sh_offset + 0x25, 0x0a, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x26, 0x00, 1); // on ecrite le WOODY en message
 
-
-	memset(e->fwoody.content + loader->sh_offset + 0x26, 0xe9, sizeof(unsigned char));
-	e->header->e_entry = e->header->e_entry - (loader->sh_addr + 0x26 + 0x05);
-	memcpy(e->fwoody.content + loader->sh_offset + 0x27, (&e->header->e_entry), 4); // on rajoute le jump sur l'entry point
+/*	memset(e->fwoody.content + loader->sh_offset + 0x4, 0, 17);
+	memset(e->fwoody.content + loader->sh_offset + 0x4, 0xeb, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x5, 0x26 - 0x06, 1);
+*/
+	entry = e->header->e_entry;
+	/*memset(e->fwoody.content + loader->sh_offset + 0x26, 0x48, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x27, 0x8b, 1);
+	e->header->e_entry = e->header->e_entry - (loader->sh_addr + 0x26 + 0x07);
+	memset(e->fwoody.content + loader->sh_offset + 0x28, 0x25, 1);
+	memcpy(e->fwoody.content + loader->sh_offset + 0x29, &e->header->e_entry, 4);*/
+	memset(e->fwoody.content + loader->sh_offset + 0x27, 0x5a, 1);
+	memset(e->fwoody.content + loader->sh_offset + 0x28, 0xe9, sizeof(unsigned char));
+	e->header->e_entry = entry - (loader->sh_addr + 0x28 + 0x05);
+	memcpy(e->fwoody.content + loader->sh_offset + 0x29, (&e->header->e_entry), 4); // on rajoute le jump sur l'entry point
 
 	e->header->e_entry = loader->sh_addr;
 	e->header->e_type = ET_EXEC;
@@ -163,12 +175,14 @@ void			fill_loader_section(t_env *e, Elf64_Shdr *loader)
 	i++;
 	while (i < e->header->e_shnum - 1)
 	{
-		e->shdr[i]->sh_offset += e->shdr[last]->sh_size + loader->sh_size;
+		e->shdr[i]->sh_offset += loader->sh_size;
 		i++;
 	}
 	e->header->e_shoff += loader->sh_size + 16;
 	i = 0;
-	while (i < e->header->e_phnum)
+	/*e->phdr[e->header->e_phnum - 1]->p_memsz += 0x40;
+	e->phdr[e->header->e_phnum - 1]->p_filesz += 0x40;
+*/	while (i < e->header->e_phnum - 1)
 	{
 		if (((e->phdr[i]->p_vaddr + e->phdr[i]->p_memsz) == (e->shdr[last]->sh_addr + e->shdr[last]->sh_size)) && last != 0)
 		{
@@ -182,7 +196,6 @@ void			fill_loader_section(t_env *e, Elf64_Shdr *loader)
 		memcpy(e->fwoody.content + e->header->e_phoff + (e->header->e_phentsize * i), e->phdr[i], sizeof(Elf64_Phdr));
 		i++;
 	}
-
 }
 
 void			creat_new_section(t_env *e)
