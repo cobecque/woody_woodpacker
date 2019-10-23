@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/22 18:10:20 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/23 14:27:52 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/23 17:10:01 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,30 @@
 ** fonction find_gap is supposed to find the unused part of text section
 ** fonction sans doute a revoir
 */
-int			find_gap(t_env *var, int *size_gap, int *end)
+uint64_t		find_gap(t_env var, int *size_gap, int *end)
 {
+	Elf64_Phdr	*phdr;
+	uint64_t	tr;
 	int			i;
-	int			tr;
-	int			text_end;
+	int			off;
 
 	i = 0;
-	while (i < var->header->e_phnum)
+	tr = 0;
+	phdr = malloc(sizeof(Elf64_Phdr));
+	while (i < var.header->e_phnum)
 	{
-		if (var->phdr[i]->p_type == PT_LOAD && var->phdr[i]->p_flags == (PF_R | PF_X))
+		off = var.header->e_phoff + var.header->e_phentsize * i;
+		phdr = var.file.content + off;
+		if (phdr->p_type == PT_LOAD && phdr->p_flags == (PF_R | PF_X))
 		{
-			tr = i;
-			*end = var->phdr[i]->p_offset + var->phdr[i]->p_memsz;
+			tr = phdr->p_vaddr + phdr->p_memsz;
+			*end = phdr->p_offset + phdr->p_filesz;
 		}
-		else if (var->phdr[i]->p_type == PT_LOAD && text_end != 0)
-			*size_gap = var->phdr[i]->p_offset - *end;
+		else if (phdr->p_type == PT_LOAD && *end != 0)
+			*size_gap = phdr->p_offset - *end;
 		i++;
 	}
 	printf("size_gap = %d\n", *size_gap);
 	return (tr);
 }
-
 

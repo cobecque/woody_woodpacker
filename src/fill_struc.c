@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:32:57 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/14 18:46:21 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/23 17:10:30 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void			init_env(t_env *env, char *file)
 	{
 		off = lseek(fd, 0, SEEK_END);
 		env->file.size = off;
-		env->file.content = malloc(off + i);
+		env->file.content = malloc(off);
 		off = lseek(fd, 0, SEEK_SET);
 		while ((ret = read(fd, &buff, buff_size)) > 0)
 		{
@@ -57,7 +57,7 @@ void			init_env(t_env *env, char *file)
 	else
 		printf("%s: No such file or directory\n", file);
 }
-
+/*
 void			fill_program_header(t_env *e)
 {
 	int			i;
@@ -142,6 +142,4 @@ void			fill_section_header(t_env *e)
 			fill_dynamics(e, i);
 		i++;
 	}
-}
-
-
+}*/

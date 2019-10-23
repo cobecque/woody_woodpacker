@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/15 13:23:51 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/23 17:42:45 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,32 @@ int			init_rc4(t_rc4 *var, t_parser inf)
 	return (0);
 }
 
+void		creat_new_file(t_env *e, int end)
+{
+	uint64_t	addr;
+	int			fd;
+
+	if (!(e->fwoody.content = (void *)malloc(e->file.size)))
+		return ;
+	e->header->e_entry = e->new_entry;
+	memcpy(e->fwoody.content, e->file.content, e->file.size);
+	memcpy(e->fwoody.content, e->header, e->header->e_ehsize);
+	memset(e->fwoody.content + end, 0xe9, 1);
+	addr = e->old_entry - (e->new_entry + 0x05);
+	memcpy(e->fwoody.content + end + 0x01, &addr, 4);
+	fd = open("woody", O_CREAT | O_RDWR, 0777);
+	write(fd, (char *)e->fwoody.content, e->file.size);
+	close(fd);
+	printf("%lx\n", addr);
+}
+
 int			main(int ac, char **av)
 {
 	t_env		e;
 	t_rc4		var;
 	t_parser	inf;
+	int			size;
+	int			end;
 
 	if (ac <= 1 || ac > 5)
 	{
@@ -108,11 +129,20 @@ int			main(int ac, char **av)
 	init_env(&e, inf.exec);
 	if (e.file.content != NULL)
 	{
+		end = 0;
+		size = 0;
 		e.header = e.file.content;
-		fill_program_header(&e);
+		e.old_entry = e.header->e_entry;
+		printf("old entry %lx\n", (unsigned long)e.old_entry);
+		e.new_entry = find_gap(e, &size, &end);
+		printf("new entry %lx\n", e.new_entry);
+		if (size > 64)
+			creat_new_file(&e, end);
+		else
+			creat_new_section(&e);
+		/*fill_program_header(&e);
 		fill_section_header(&e);
-		//printf("OEP = 0x%lx entsize = %d strndx = %d, shoff = %lx\n", e.header->e_entry, e.header->e_shentsize, e.header->e_shstrndx, e.header->e_shoff);
-		creat_new_section(&e);
+		creat_new_section(&e);*/
 	}
 	return (0);
 }

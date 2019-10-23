@@ -14,9 +14,12 @@ start:
 	ret
 
 _main:
+	push rdx
 	lea rsi, [message]
+	mov r12, rsi
 	mov rdx, len
 	mov rax, SYS_WRITE
 	mov rdi, 1
 	syscall
+	pop rdx
 	ret

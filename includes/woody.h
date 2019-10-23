@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/14 20:39:52 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/23 14:51:33 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,10 @@ uint8_t				*key_to_hexa(unsigned char *entry, int *size);
 		t_file_inf	file;
 		t_file_inf	fwoody;
 		Elf64_Ehdr	*header;
-		Elf64_Phdr	**phdr;
-		Elf64_Shdr	**shdr;
-		Elf64_Sym	**sym;
-		Elf64_Dyn	**dyn;
-		char		**section_name;
+		uint64_t	old_entry;
+		uint64_t	new_entry;
+		uint64_t	end_load_off;
+		uint64_t	end_load_addr;
 	}				t_env;
 
 
@@ -71,6 +70,12 @@ void		fill_section_header(t_env *e);
 ** section
 */
 void		creat_new_section(t_env *env);
+
+/*
+** code_cave.c
+*/
+uint64_t	find_gap(t_env e, int *size_gap, int *end);
+
 #endif
 
 

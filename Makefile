@@ -35,7 +35,8 @@ INCDIR =	./includes
 SRC =	main.c \
 	key.c \
 	fill_struc.c \
-	section.c
+	section.c \
+	code_cave.c
 
 INC =	woody.h
 
