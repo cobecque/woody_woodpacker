@@ -8,7 +8,7 @@ section .bss
 section .text
 	global _rc4
 
-;char	*rc4(const char *plain, const void *key, int size_key, int text_len)
+;char	*rc4(const char *plain, const void *key, int size_key, int text_len, uint8_t *dst)
 
 ;initialisation of variable
 _rc4:
@@ -16,6 +16,7 @@ _rc4:
 	push rsi
 	push rdx
 	push rcx
+	push r8
 
 	mov r10, rcx					;save len in r10
 	mov r12, rdx					;save size in r12
@@ -61,6 +62,8 @@ initialisation:
 		cmp rcx, SIZE_TAB
 		jne .fill_table					;jump on fill_table
 
+;r10 = len
+;r14 = idx
 		xor r8, r8
 		xor r14, r14
 		xor rcx, rcx				;clear garbage
@@ -71,7 +74,6 @@ initialisation:
 			mov rax, rcx
 			idiv r9
 			mov rcx, rdx				;(i + 1) % SIZE_TAB
-			;jmp end
 
 			add r8b, [rbx + rcx]		;j += S(i)
 			xor rdx, rdx
@@ -93,21 +95,24 @@ initialisation:
 			xor r13, r13
 			mov r13b, dl
 			mov r13b, [rbx + r13]			;cyph_byte
+			;jmp end
 
 			xor r13b, [rdi]
-			jmp end
 			mov [rdi], r13b
+			;jmp end
 
 			inc rdi
+			;inc r8
 			mov r11b, [rdi]
-			;cmp r11b, 0
+			cmp r11b, 0
 			;jmp end
-			inc r14
-			cmp r14, r10					;fin de condition
+			;inc r14
+			;cmp r14, r10					;fin de condition
 			jne .algo
 
 end:
-	mov rax, r10
+	mov rax, r15
+	pop r8
 	pop rcx
 	pop rdx
 	pop rsi
