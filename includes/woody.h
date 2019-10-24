@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/23 14:51:33 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/10/24 15:35:54 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "libftasm.h"
 
 #define NB_ALGO 1
+#define DEFAULT_KEY_SIZE 16
 #define SIZE_PERM 256
 #define S(x) var.perm[x]
 
@@ -37,6 +38,8 @@ typedef struct		s_rc4
 
 int					check_key(unsigned char *key);
 uint8_t				*key_to_hexa(unsigned char *entry, int *size);
+void				print_key(const uint8_t *key, int keysz);
+uint8_t				*random_key_gen(int *keysz);
 
 #ifdef __linux__
 	#include <elf.h>
@@ -76,6 +79,10 @@ void		creat_new_section(t_env *env);
 */
 uint64_t	find_gap(t_env e, int *size_gap, int *end);
 
+/*
+** encrypt_woody.c
+*/
+t_file_inf	encrypt_woody(t_env *e);
 #endif
 
 

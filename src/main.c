@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/24 14:12:55 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/24 16:15:23 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,17 +80,20 @@ t_parser	pars_information(int ac, char **av)
 int			init_rc4(t_rc4 *var, t_parser inf)
 {
 	var->key_len = 0;
-	if (check_key((unsigned char *)inf.key) == -1)
-		return (-1);
-	var->key = key_to_hexa((unsigned char *)inf.key, &var->key_len);
-	printf("--> %d\n", var->key_len);
+	if (!inf.key)
+		var->key = random_key_gen(&var->key_len);
+	else
+	{
+		if (check_key((unsigned char *)inf.key) == -1)
+			return (-1);
+		var->key = key_to_hexa((unsigned char *)inf.key, &var->key_len);
+	}
 	return (0);
 }
 
-void		creat_new_file(t_env *e, int end)
+void		fill_code_cave(t_env *e, int end)
 {
 	uint64_t	addr;
-	int			fd;
 
 	if (!(e->fwoody.content = (void *)malloc(e->file.size)))
 		return ;
@@ -100,10 +103,17 @@ void		creat_new_file(t_env *e, int end)
 	memset(e->fwoody.content + end, 0xe9, 1);
 	addr = e->old_entry - (e->new_entry + 0x05);
 	memcpy(e->fwoody.content + end + 0x01, &addr, 4);
+}
+
+void		creat_new_file(t_env *e, t_rc4 var)
+{
+	int			fd;
+
+	printf("%d\n", var.key_len);
 	fd = open("woody", O_CREAT | O_RDWR, 0777);
+	e->fwoody = encrypt_woody(e);
 	write(fd, (char *)e->fwoody.content, e->file.size);
 	close(fd);
-	printf("%lx\n", addr);
 }
 
 int			main(int ac, char **av)
@@ -116,14 +126,13 @@ int			main(int ac, char **av)
 
 	if (ac <= 1 || ac > 5)
 	{
-		printf("Usage: ./woody_woodypacker -[algo] -k [key] <executable\n\tAlgo : rc4\nDefault : rc4 with randomly genereted key\n");
+		printf("Usage: ./woody_woodypacker -[algo] -k [key] <executable>\n\tAlgo : rc4\nIf no key is provided, a random key will be generated\n");
 		return (0);
 	}
 	inf = pars_information(ac, av);
 	if (!inf.exec)
 		return (0);
-	printf("algo = %d\nkey = %s\nexec = %s\n", inf.algo, inf.key, inf.exec);
-	if (inf.key && init_rc4(&var, inf) == -1)
+	if (init_rc4(&var, inf) == -1)
 		return (0);
 	printf("%s\n", inf.exec);
 	init_env(&e, inf.exec);
@@ -137,12 +146,13 @@ int			main(int ac, char **av)
 		e.new_entry = find_gap(e, &size, &end);
 		printf("new entry %lx\n", e.new_entry);
 		if (size > 64)
-			creat_new_file(&e, end);
+			fill_code_cave(&e, end);
 		else
 			creat_new_section(&e);
+		creat_new_file(&e, var);
 		/*fill_program_header(&e);
-		fill_section_header(&e);
-		creat_new_section(&e);*/
+		  fill_section_header(&e);
+		  creat_new_section(&e);*/
 	}
 	return (0);
 }

@@ -36,7 +36,8 @@ SRC =	main.c \
 	key.c \
 	fill_struc.c \
 	section.c \
-	code_cave.c
+	code_cave.c \
+	encrypt_section.c
 
 INC =	woody.h
 
