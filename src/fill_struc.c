@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/06 18:32:57 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/23 17:10:30 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/10/24 14:15:32 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /*
 ** Set different verbose at 0 too mute them
 */
-#define VERB 1
+#define VERB 0
 #if VERB == 1
 # define DYN_VERB 0
 # define SYM_VERB 0

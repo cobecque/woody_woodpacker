@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/14 20:06:31 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/14 21:03:39 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/10/24 14:16:04 by rostroh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ unsigned char	*clear_space(unsigned char *entry, int *size)
 		if (entry[i] != ' ')
 		{
 			new[*size] = entry[i];
-			printf("%c",new[*size]);
 			(*size)++;
 		}
 		i++;
@@ -89,18 +88,13 @@ uint8_t			*key_to_hexa(unsigned char *entry, int *size)
 	if (!(key = (uint8_t *)malloc(sizeof(uint8_t) * *size)))
 		return (NULL);
 	len = _ft_strlen((char *)new);
-	printf("Doute %d\n", len);
 	while (i + 1 < len)
 	{
 		key[j] = char_to_nibble(new[i]) << 4 | char_to_nibble(new[i + 1]);
-		printf("%x ", key[j]);
 		j++;
 		i += 2;
 	}
 	if (i == len - 1)
-	{
 		key[j] = char_to_nibble(new[i]);
-		printf("%x ", key[j]);
-	}
 	return (key);
 }
