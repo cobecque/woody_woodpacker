@@ -82,7 +82,10 @@ uint64_t	find_gap(t_env e, int *size_gap, int *end);
 /*
 ** encrypt_woody.c
 */
-t_file_inf	encrypt_woody(t_env *e);
+t_file_inf	encrypt_woody(t_env *e, t_rc4 var);
+
+unsigned char *rc4(const char *plain, const void *key, int size, int len);
+
 #endif
 
 

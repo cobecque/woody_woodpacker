@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/24 16:15:23 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/11/16 01:41:19 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "sys/mman.h"
+
+#define buff_size 1
 
 int			fill_algo(int *algo_idx, char *algo)
 {
@@ -94,15 +96,54 @@ int			init_rc4(t_rc4 *var, t_parser inf)
 void		fill_code_cave(t_env *e, int end)
 {
 	uint64_t	addr;
+	char		buf[buff_size];
+	void		*file;
+	int			fd;
+	int			i;
+	int			j;
 
 	if (!(e->fwoody.content = (void *)malloc(e->file.size)))
 		return ;
 	e->header->e_entry = e->new_entry;
 	memcpy(e->fwoody.content, e->file.content, e->file.size);
 	memcpy(e->fwoody.content, e->header, e->header->e_ehsize);
-	memset(e->fwoody.content + end, 0xe9, 1);
-	addr = e->old_entry - (e->new_entry + 0x05);
-	memcpy(e->fwoody.content + end + 0x01, &addr, 4);
+	if ((fd = open("decrypt_test.o", O_RDONLY)) != -1) // on peut ajouter la fonction asm au code et juste la rajouter avec un memcpy sur le pointeur de la fonction
+	{
+		file = malloc(lseek(fd, 0, SEEK_END));
+		lseek(fd, 0, SEEK_SET);
+		j = 0;
+		i = 0;
+		while ((j = read(fd, &buf, buff_size)) > 0)
+		{
+			ft_memcpy(file + i, &buf, j);
+			i += j;
+		}
+		close(fd);
+	}
+	memcpy(e->fwoody.content + end, file + 0x260, 0x11e);
+	addr = (0x9f4 - 0x8d4) - 0x0b;
+	printf("lea addr %lx\n", (unsigned long)addr);
+	memcpy(e->fwoody.content + end + 0x07, &addr, 4);
+
+	memset(e->fwoody.content + end + 0x20, 0xe9, 1);
+	addr = e->old_entry - (e->new_entry + 0x05 + 0x20);
+	memcpy(e->fwoody.content + end + 0x21, &addr, 4);
+
+	addr = 0x0feb;
+	memcpy(e->fwoody.content + end + 0x11e, &addr, 2);
+	memset(e->fwoody.content + end + 0x11e + 0x02, 0x2e, 4);
+	memset(e->fwoody.content + end + 0x11e + 0x06, 0x57, 1);
+	memset(e->fwoody.content + end + 0x11e + 0x07, 0x4f, 2);
+	memset(e->fwoody.content + end + 0x11e + 0x09, 0x44, 1);
+	memset(e->fwoody.content + end + 0x11e + 0x0a, 0x59, 1);
+	memset(e->fwoody.content + end + 0x11e + 0x0b, 0x2e, 4);
+	memset(e->fwoody.content + end + 0x11e + 0x0f, 0x0a, 1);
+	memset(e->fwoody.content + end + 0x11e + 0x10, 0x00, 1);
+
+	printf("%s", (char *)(e->fwoody.content + end + 0x0b + 0x115));
+	memset(e->fwoody.content + end + 0x11e + 0x10, 0xe9, 1);
+	addr = e->old_entry - (e->new_entry + 0x05 + 0x11e + 0x10);
+	memcpy(e->fwoody.content + end + 0x11e + 0x11, &addr, 4);
 }
 
 void		creat_new_file(t_env *e, t_rc4 var)
@@ -111,7 +152,7 @@ void		creat_new_file(t_env *e, t_rc4 var)
 
 	printf("%d\n", var.key_len);
 	fd = open("woody", O_CREAT | O_RDWR, 0777);
-	e->fwoody = encrypt_woody(e);
+	//e->fwoody = encrypt_woody(e, var);
 	write(fd, (char *)e->fwoody.content, e->file.size);
 	close(fd);
 }
@@ -145,7 +186,7 @@ int			main(int ac, char **av)
 		printf("old entry %lx\n", (unsigned long)e.old_entry);
 		e.new_entry = find_gap(e, &size, &end);
 		printf("new entry %lx\n", e.new_entry);
-		if (size > 64)
+		if (size > 0x11e)
 			fill_code_cave(&e, end);
 		else
 			creat_new_section(&e);

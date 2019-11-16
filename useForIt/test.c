@@ -14,7 +14,8 @@
 
 int			main(void)
 {
-	printf("Hello World!\n");
-	printf("testing!\n");
+	int	a;
+
+	a = 0;
 	return (0);
 }

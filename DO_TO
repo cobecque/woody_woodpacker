@@ -15,3 +15,7 @@ info =
 addralign = 
 ent_size = 
 
+
+alors : decryptage ---
+		pour decrypter on rajoute une fonction apres ton code rc4, cette fonction va boucler sur rc4. on va avoir les entry point de text et des autres sections que l'on doit encrypter. les valeurs ne seront pas ecrite directement, on garde une structure avec les emplacement des differentes sections, pour le code que l'on rajoute dans le binaire on peut aussi utilise les pointeurs sur fonction et memcpy. Pour recuperer la size de la fonction il suffit de faire le calcul en asm. On peut creer des globals en asm et les utiliser avec "extern" dans notre code c.
+

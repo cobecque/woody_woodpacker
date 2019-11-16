@@ -6,7 +6,7 @@
 #    By: cobecque <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/18 11:55:23 by cobecque          #+#    #+#              #
-#    Updated: 2019/10/01 07:21:35 by cobecque         ###   ########.fr        #
+#    Updated: 2019/11/15 21:04:21 by cobecque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,11 @@ NAME = 		woody_woodpacker
 
 SRCDIR =	./src
 
+ASMDIR =	./asm
+
 OBJDIR =	./obj
+
+OBJASMDIR =	./objasm
 
 INCDIR =	./includes
 
@@ -39,11 +43,17 @@ SRC =	main.c \
 	code_cave.c \
 	encrypt_section.c
 
+ASMF =	rc4.s
+
 INC =	woody.h
 
 SRCS =		$(SRC:%=$(SRCDIR)/%)
 
 OBJS =		$(SRC:%.c=$(OBJDIR)/%.o)
+
+ASM =		$(ASMF:%=$(ASMDIR)/%)
+
+ASMOBJS =	$(ASMF:%.s=$(OBJASMDIR)/%.o)
 
 INCS =		$(INC:%=$(INCDIR)/%)
 
@@ -61,6 +71,13 @@ LIBA = 		$(LIBADIR)/$(LIBANAME)
 
 #------------------------------------------------------------------------------#
 # List all compilation variables.
+
+NASM =		nasm
+AFLAGS =	-f macho64
+UNAME_S :=	$(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	AFLAGS = -f elf64
+endif
 
 CC =		gcc
 
@@ -83,13 +100,21 @@ all:
 	@$(MAKE) -C $(LIBPDIR)
 	@$(MAKE) $(NAME)
 
-$(NAME): $(OBJS) $(LIB)
+$(NAME): $(OBJS) $(LIB) $(ASMOBJS)
 	@$(MAKE) printname
 	@printf "%-15s%s\n" Linking $@
 	@$(CC) $(FLAGS) $^ -o $@ $(LFLAGS)
 	@printf "$(GREEN)"
 	@echo "Compilation done !"
 	@printf "$(RES)"
+
+$(ASMOBJS): $(INCS)
+
+$(OBJASMDIR)/%.o: $(ASMDIR)/%.s
+	@mkdir -p $(OBJASMDIR)
+	@$(MAKE) printname
+	@printf "%-15s%s\n" Compiling $@
+	@$(NASM) $(AFLAGS) -o $@ $<
 
 $(OBJS): $(INCS)
 
