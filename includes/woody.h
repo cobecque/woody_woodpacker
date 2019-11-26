@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/10/24 15:35:54 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/11/26 07:26:09 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@
 #define SIZE_PERM 256
 #define S(x) var.perm[x]
 
-typedef struct	s_parser
+typedef struct		s_parser
 {
-	int			algo;
-	char		*key;
-	char		*exec;
-}				t_parser;
+	int				algo;
+	char			*key;
+	char			*exec;
+}					t_parser;
 
 typedef struct		s_rc4
 {
@@ -64,29 +64,65 @@ uint8_t				*random_key_gen(int *keysz);
 /*
 ** fill_struct.c
 */
-void		init_env(t_env *env, char *file);
-void		fill_program_header(t_env *e);
-void		fill_dynamics(t_env *e, int i);
-void		fill_section_header(t_env *e);
+void				init_env(t_env *env, char *file);
+void				fill_program_header(t_env *e);
+void				fill_dynamics(t_env *e, int i);
+void				fill_section_header(t_env *e);
 
 /*
 ** section
 */
-void		creat_new_section(t_env *env);
+void				creat_new_section(t_env *env);
 
 /*
 ** code_cave.c
 */
-uint64_t	find_gap(t_env e, int *size_gap, int *end);
+uint64_t			find_gap(t_env e, int *size_gap, int *end);
 
 /*
 ** encrypt_woody.c
 */
-t_file_inf	encrypt_woody(t_env *e, t_rc4 var);
+t_file_inf			encrypt_woody(t_env *e, t_rc4 var);
 
-unsigned char *rc4(const char *plain, const void *key, int size, int len);
+#elif __APPLE__
+	#include <mach-o/swap.h>
+	#include <mach-o/stab.h>
+	#include <mach-o/loader.h>
+	#include <mach-o/ranlib.h>
+
+	#define MACH_HEADER struct mach_header_64
+	#define SECT struct section_64
+	#define SEG struct segment_command_64
+	#define SYMB struct symtab_command
+	#define LIST struct nlist_64
+	#define LOAD struct load_command
+	#define ENTRY struct entry_point_command
+
+	typedef struct	s_file_inf
+	{
+		int			size;
+		void		*content;
+	}				t_file_inf;
+
+	typedef struct	s_env
+	{
+		t_file_inf	file;
+		t_file_inf	fwoody;
+		MACH_HEADER	*header;
+		SEG			*segment;
+		SECT		*section;
+		SEG			*seg_text;
+		SECT		*sect_text;
+		ENTRY		*entry;
+		SEG			*last;
+		int			off_main;
+		uint64_t	off_start;
+		uint64_t	old_entry;
+		uint64_t	new_entry;
+	}				t_env;
 
 #endif
 
+unsigned char		*rc4(const char *plain, const void *key, int size, int len);
 
 #endif

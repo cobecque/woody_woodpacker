@@ -6,7 +6,7 @@
 #    By: cobecque <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/18 11:55:23 by cobecque          #+#    #+#              #
-#    Updated: 2019/11/15 21:04:21 by cobecque         ###   ########.fr        #
+#    Updated: 2019/11/26 04:59:57 by cobecque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,10 +21,15 @@ RED =		\033[1;31m
 RES =		\033[0m
 
 #------------------------------------------------------------------------------#
+UNAME_S :=	$(shell uname -s)
 
 NAME = 		woody_woodpacker
 
-SRCDIR =	./src
+SRCDIR =	./macho
+
+ifeq ($(UNAME_S),Linux)
+	SRCDIR =	./src
+endif
 
 ASMDIR =	./asm
 
@@ -36,12 +41,16 @@ INCDIR =	./includes
 
 # List all sources, objects and includes files of 'libft'.
 
-SRC =	main.c \
-	key.c \
-	fill_struc.c \
-	section.c \
-	code_cave.c \
-	encrypt_section.c
+SRC =	main.c
+
+ifeq ($(UNAME_S),Linux)
+	SRC =	main.c \
+			key.c \
+			fill_struc.c \
+			section.c \
+			code_cave.c \
+			encrypt_section.c
+endif
 
 ASMF =	rc4.s
 
@@ -74,7 +83,7 @@ LIBA = 		$(LIBADIR)/$(LIBANAME)
 
 NASM =		nasm
 AFLAGS =	-f macho64
-UNAME_S :=	$(shell uname -s)
+
 ifeq ($(UNAME_S),Linux)
 	AFLAGS = -f elf64
 endif
@@ -99,6 +108,7 @@ all:
 	@$(MAKE) -C $(LIBADIR)
 	@$(MAKE) -C $(LIBPDIR)
 	@$(MAKE) $(NAME)
+
 
 $(NAME): $(OBJS) $(LIB) $(ASMOBJS)
 	@$(MAKE) printname
