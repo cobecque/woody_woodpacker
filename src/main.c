@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/11/16 01:41:19 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/11/29 16:34:31 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,13 @@
 int			fill_algo(int *algo_idx, char *algo)
 {
 	int			i;
-	const char	*alg_name[] = {"rc4"};
+	const char	*alg_name[] = {NULL, "rc4"};
 
 	i = 0;
 	if (algo[0] == '-')
 	{
 		if (_ft_strlen(algo) == 1)
-		{
-			printf("No algo specified\n");
-			return (-1);
-		}
+			return(ft_error_parsing("no algo"));
 		else
 		{
 			algo++;
@@ -42,14 +39,47 @@ int			fill_algo(int *algo_idx, char *algo)
 				}
 				i++;
 			}
+			if (i >= NB_ALGO && *algo_idx == 0)
+			{
+				ft_error_parsing("bad algo");
+				exit (-1);
+			}
 		}
 	}
+	if (*algo_idx != 0)
+		return (1);
+	return (0);
+}
+
+void		pars_option_after_exec(int ac, char **av, int exc, t_parser *inf)
+{
+	if (exc < ac && ft_strcmp("-k", av[exc]) == 0 && _ft_strlen(av[exc]) == 2)
+	{
+		if (ft_strcmp(av[exc], "-k") == 0)
+		{
+			exc++;
+			if (exc < ac)
+				inf->key = av[exc];
+			else
+			{
+				printf("%s", NO_KEY);
+				exit (-1);
+			}
+			exc++;
+		}
+	}
+	else if (exc < ac && inf->algo == 0 && fill_algo(&inf->algo, av[exc]) != 0)
+		exc++;
 	else
 	{
-		*algo_idx = 0;
-		return (1);
+		if (inf->algo != 0)
+			printf("Invalid option or tried to use 2 or more algo\n");
+		else
+			printf("Invalid option:\n%s", USAGE_MSG);
+		exit (-1);
 	}
-	return (0);
+	if (exc < ac)
+		pars_option_after_exec(ac, av, exc, inf);
 }
 
 t_parser	pars_information(int ac, char **av)
@@ -57,8 +87,9 @@ t_parser	pars_information(int ac, char **av)
 	int			exc;
 	t_parser	inf;
 
+	ft_bzero(&inf, sizeof(t_parser));
 	exc = 1;
-	if (fill_algo(&inf.algo, av[exc]) != 1)
+	if (fill_algo(&inf.algo, av[exc]) != 0)
 		exc++;
 	if (exc < ac)
 	{
@@ -67,15 +98,26 @@ t_parser	pars_information(int ac, char **av)
 			exc++;
 			if (exc < ac)
 				inf.key = av[exc];
+			else
+			{
+				printf("%s", NO_KEY);
+				exit (-1);
+			}
 			exc++;
 		}
-		else
-			inf.key = NULL;
 	}
 	if (exc < ac)
-		inf.exec = av[exc];
-	else
-		printf("No exec specified\n");
+	{
+		if (ft_strcmp("-", av[exc]) == 0 && exc < ac)
+			pars_option_after_exec(ac, av, exc, &inf);
+		else
+		{
+			inf.exec = av[exc];
+			exc++;
+			if (exc < ac)
+				pars_option_after_exec(ac, av, exc, &inf);
+		}
+	}
 	return (inf);
 }
 
@@ -152,7 +194,7 @@ void		creat_new_file(t_env *e, t_rc4 var)
 
 	printf("%d\n", var.key_len);
 	fd = open("woody", O_CREAT | O_RDWR, 0777);
-	//e->fwoody = encrypt_woody(e, var);
+//e->fwoody = encrypt_woody(e, var);
 	write(fd, (char *)e->fwoody.content, e->file.size);
 	close(fd);
 }
@@ -166,36 +208,30 @@ int			main(int ac, char **av)
 	int			end;
 
 	if (ac <= 1 || ac > 5)
-	{
-		printf("Usage: ./woody_woodypacker -[algo] -k [key] <executable>\n\tAlgo : rc4\nIf no key is provided, a random key will be generated\n");
-		return (0);
-	}
+		return (ft_error_parsing("usage error"));
 	inf = pars_information(ac, av);
-	if (!inf.exec)
-		return (0);
+	if (inf.algo == 0)
+		inf.algo = 1;
 	if (init_rc4(&var, inf) == -1)
 		return (0);
-	printf("%s\n", inf.exec);
+	if (!inf.exec)
+		return (ft_error_parsing("no exec"));
 	init_env(&e, inf.exec);
 	if (e.file.content != NULL)
 	{
 		end = 0;
 		size = 0;
 		e.header = e.file.content;
+		if (check_error_header(e, inf.exec) == -1)
+			return (-1);
 		e.old_entry = e.header->e_entry;
-		printf("old entry %lx\n", (unsigned long)e.old_entry);
 		e.new_entry = find_gap(e, &size, &end);
-		printf("new entry %lx\n", e.new_entry);
 		if (size > 0x11e)
 			fill_code_cave(&e, end);
 		else
 			creat_new_section(&e);
 		creat_new_file(&e, var);
-		/*fill_program_header(&e);
-		  fill_section_header(&e);
-		  creat_new_section(&e);*/
 	}
 	return (0);
 }
 
-//printf("%d, %d, %d, %d, %d, %d, %d\n", SHN_UNDEF, SHN_LORESERVE, SHN_LOPROC, SHN_HIPROC, SHN_ABS, SHN_COMMON, SHN_HIRESERVE);

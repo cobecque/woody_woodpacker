@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/11/26 07:26:09 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/11/29 16:30:51 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,39 @@
 #include "libft.h"
 #include "libftasm.h"
 
-#define NB_ALGO 1
+#define NB_ALGO 2
 #define DEFAULT_KEY_SIZE 16
 #define SIZE_PERM 256
 #define S(x) var.perm[x]
+
+#define ERROR_OPEN_URANDOM "Error openning urandom\n"
+#define ERROR_READ_URANDOM "Error while reading urandom stream\n"
+#define NO_KEY "No key specified with option -k\n"
+
+#define KEY "key hex"
+#define KEY_MSG "Key must contains hexadecimal values only\n"
+
+#define EXEC "no exec"
+#define EXEC_MSG "No exec specified\n"
+
+#define ALGO "no algo"
+#define ALGO_MSG "No algo specified\n"
+
+#define BAD_ALGO "bad algo"
+#define BAD_ALGO_MSG "Bad algo choose\n"
+
+#define USAGE "usage error"
+#define USAGE_TRUNC_1 "Usage: ./woody_woodpacker -[algo] -k [key] <executable>"
+#define USAGE_TRUNC_2 "\n\nAlgo : rc4\nIf no key is provided, a random"
+#define USAGE_TRUNC_3 " key will be generated\n"
+#define USAGE_MSG USAGE_TRUNC_1 USAGE_TRUNC_2 USAGE_TRUNC_3
+
+#define BAD_MAGIC ": Don't have a valid ident (magic and precision file)\n"
+#define BAD_EXEC ": Not an exec file\n"
+#define BAD_HEADER_SIZE ": Bad size for Elf header\n"
+#define BAD_PH_OFF ": Bad offset for program header\n"
+#define BAD_SH_OFF ": Bad offset for section header\n"
+#define BAD_SHSTR_IND ": e_shstrndx is too far in section array\n"
 
 typedef struct		s_parser
 {
@@ -82,7 +111,15 @@ uint64_t			find_gap(t_env e, int *size_gap, int *end);
 /*
 ** encrypt_woody.c
 */
+
 t_file_inf			encrypt_woody(t_env *e, t_rc4 var);
+
+/*
+** ft_error.c
+*/
+
+int					ft_error_parsing(char *error);
+int					check_error_header(t_env e, char *f);
 
 #elif __APPLE__
 	#include <mach-o/swap.h>

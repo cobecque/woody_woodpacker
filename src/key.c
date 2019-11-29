@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/14 20:06:31 by rostroh           #+#    #+#             */
-/*   Updated: 2019/10/24 14:55:45 by rostroh          ###   ########.fr       */
+/*   Updated: 2019/11/29 16:37:29 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,7 @@ int				check_key(unsigned char *key)
 			'f') || (key[i] >= 'A' && key[i] <= 'F') || key[i] == ' ')
 			;
 		else
-		{
-			printf("Key must contains hexadecimal values only\n");
-			return (-1);
-		}
+			return (ft_error_parsing("key hex"));
 		i++;
 	}
 	return (1);
@@ -124,14 +121,14 @@ uint8_t		*random_key_gen(int *keysz)
 		return (NULL);
 	if ((urand_stream = open("/dev/urandom", O_RDONLY)) < 0)
 	{
-		printf("Error openning urandom\n");
+		printf("%s", ERROR_OPEN_URANDOM);
 		return (NULL);
 	}
 	while (i < DEFAULT_KEY_SIZE)
 	{
 		if (read(urand_stream, &key[i], 1) < 0)
 		{
-			printf("Error while readding urandom stream\n");
+			printf("%s", ERROR_READ_URANDOM);
 			return (NULL);
 		}
 		i++;

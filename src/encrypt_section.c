@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 15:03:37 by rostroh           #+#    #+#             */
-/*   Updated: 2019/11/15 21:18:46 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/11/29 16:37:04 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,8 @@
 #define SH_ENTSIZE e->header->e_shentsize
 #define SH_OFF e->header->e_shoff
 #define FWOODY e->fwoody.content
-/*
-int					size_key(t_parser inf)
-{
-	int		size;
 
-	size = 0;
-
-	return (size);
-}*/
+extern unsigned char *_rc4();
 
 t_file_inf			encrypt_woody(t_env *e, t_rc4 var)
 {
@@ -38,9 +31,7 @@ t_file_inf			encrypt_woody(t_env *e, t_rc4 var)
 		printf("%d: %ld \n", i, scthdr.sh_offset);
 		if (scthdr.sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
 		{
-			extern unsigned char *_rc4();
 			memcpy(FWOODY + scthdr.sh_offset, _rc4((char *)(FWOODY + scthdr.sh_offset), var.key, var.key_len, (SH_OFF + SH_ENTSIZE)), scthdr.sh_size);
-			printf("Une super section dites-voir\n");
 		}
 		i++;
 	}
