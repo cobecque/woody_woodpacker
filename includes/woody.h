@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/11/29 16:30:51 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/12/02 16:04:47 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 #define ALGO_MSG "No algo specified\n"
 
 #define BAD_ALGO "bad algo"
-#define BAD_ALGO_MSG "Bad algo choose\n"
+#define BAD_ALGO_MSG "Unknowned algo\n"
 
 #define USAGE "usage error"
 #define USAGE_TRUNC_1 "Usage: ./woody_woodpacker -[algo] -k [key] <executable>"
@@ -146,13 +146,17 @@ int					check_error_header(t_env e, char *f);
 		t_file_inf	file;
 		t_file_inf	fwoody;
 		MACH_HEADER	*header;
+		SYMB		*symtab;
 		SEG			*segment;
+		SEG			*segment_write;
 		SECT		*section;
+		SECT		*section_write;
 		SEG			*seg_text;
 		SECT		*sect_text;
 		ENTRY		*entry;
 		SEG			*last;
 		int			off_main;
+		int			off_seg;
 		uint64_t	off_start;
 		uint64_t	old_entry;
 		uint64_t	new_entry;

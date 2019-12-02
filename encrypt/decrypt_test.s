@@ -36,6 +36,7 @@ writeWoody:
 	pop rdx
 	pop rsi
 	pop rdi
+	jmp end
 
 start:
 	push rdi
@@ -149,3 +150,4 @@ end:
 	pop rsi
 	pop rdi
 	ret
+

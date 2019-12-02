@@ -6,7 +6,7 @@
 #    By: cobecque <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/18 11:55:23 by cobecque          #+#    #+#              #
-#    Updated: 2019/11/29 13:30:16 by cobecque         ###   ########.fr        #
+#    Updated: 2019/12/02 17:52:30 by cobecque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -95,6 +95,7 @@ CC =		gcc
 CFLAGS =	-Wall			\
 			-Wextra			\
 			-Werror			\
+#			-fsanitize=address -g3
 
 INCFLAGS =	-I $(INCDIR)
 
