@@ -1,19 +1,47 @@
 DEFAULT REL
 
-%define SIZE_TAB 256
-
-section .bss
-	S: resb SIZE_TAB
-
 section .text
-	global _rc4
+	global _decode_rc4:function
+	global SIZE_RC4:data
+	global _decode_data:data
 
-;void		rc4(const void *key, int size_key, char *plain, int plain_len)
-_rc4:
+	SIZE_RC4 dd _decode_data - _decode_rc4
+
+_decode_rc4:
+
+writeWoody:
+	push rdi
+	push rsi
+	push rdx
+	push rax
+
+	lea rsi, [message]
+	mov rdx, 0x0e			;size msg
+	mov rax, 1				;syscall write
+	mov rdi, 1
+	syscall
+
+	pop rax
+	pop rdx
+	pop rsi
+	pop rdi
+
+;void		decode_rc4(const void *key, int key_len)
+;void		rc4(const void *key, int key_len, char *plain, int plain_len)
+decode:
 	push rdi
 	push rsi
 	push rdx
 	push rcx
+
+	lea rdi, [key]
+	lea rsi, [key_size]
+	lea rdx, [cyph_addr]
+	lea rcx, [cyph_size]
+
+;void		rc4(const void *key, int size_key, char *plain, int plain_len)
+startRc4:
+	S: resb 256			;tab
 
 	mov r9, rcx			;save len in r9
 	lea rbx, [REL S]
@@ -26,14 +54,14 @@ initalisation:
 	.init_tab:
 		mov [rbx + rcx], rcx
 		inc rcx
-		cmp rcx, SIZE_TAB
+		cmp rcx, 256
 		jne .init_tab
 
 ;fill permutation with key
 	xor rcx, rcx
 	xor r10, r10
 	mov r11, rdx
-	mov r15, SIZE_TAB
+	mov r15, 256
 	.fill_table:
 		add r10b, [rbx + rcx]			;j + S(i)
 		xor rdx, rdx
@@ -52,7 +80,7 @@ initalisation:
 		mov [rbx + r10], r12b			;S(i) = S(j)
 
 		inc rcx
-		cmp rcx, SIZE_TAB
+		cmp rcx, 256
 		jne .fill_table
 
 algo:
@@ -109,3 +137,11 @@ end:
 	pop rsi
 	pop rdi
 	ret
+	mov rdx, 1
+
+_decode_data:
+	key: resb 16
+	key_size: dd 0
+	message: resb 14
+	cyph_addr: dq 0
+	cyph_size: dd 0
