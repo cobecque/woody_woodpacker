@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 07:21:10 by cobecque          #+#    #+#             */
-/*   Updated: 2019/12/02 16:04:47 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/12/04 14:54:30 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,8 @@ uint8_t				*random_key_gen(int *keysz);
 		uint64_t	new_entry;
 		uint64_t	end_load_off;
 		uint64_t	end_load_addr;
+		uint64_t	addr_encrypt;
+		int			size_encrypt;
 	}				t_env;
 
 
@@ -164,6 +166,6 @@ int					check_error_header(t_env e, char *f);
 
 #endif
 
-unsigned char		*rc4(const char *plain, const void *key, int size, int len);
+void		rc4(const void *key, int size_key, char *plain, int plain_len);
 
 #endif
