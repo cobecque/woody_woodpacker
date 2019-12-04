@@ -6,7 +6,7 @@ section .text
 	global _decode_data:data
 	extern _rc4
 
-	SIZE_RC4 dd _decode_rc4 - _decode_data
+	SIZE_RC4 dd _decode_data - _decode_rc4
 
 _decode_rc4:
 
@@ -42,6 +42,12 @@ decode:
 
 ;void		rc4(const void *key, int size_key, char *plain, int plain_len)
 _rc4:
+	push r9
+	push r10
+	push r11
+	push r12
+	push r13
+	push r15
 	S: resb 256			;tab
 
 	mov r9, rcx			;save len in r9
@@ -133,6 +139,12 @@ algo:
 		jne .loop
 
 end:
+	pop r15
+	pop r13
+	pop r12
+	pop r11
+	pop r10
+	pop r9
 	pop rcx
 	pop rdx
 	pop rsi
