@@ -6,7 +6,7 @@
 /*   By: rostroh <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/24 15:03:37 by rostroh           #+#    #+#             */
-/*   Updated: 2019/12/04 14:58:20 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/12/04 15:56:53 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ t_file_inf			encrypt_woody(t_env *e, t_rc4 var)
 		ft_memcpy(&scthdr, FWOODY + SH_OFF + SH_ENTSIZE * i, sizeof(Elf64_Shdr));
 		if (scthdr.sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
 		{
+			printf("off %lx\n", scthdr.sh_offset);
 			if (e->addr_encrypt == 0)
 				e->addr_encrypt = scthdr.sh_offset;
 			last_addr = scthdr.sh_offset;
