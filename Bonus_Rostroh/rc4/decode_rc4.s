@@ -1,40 +1,55 @@
 DEFAULT REL
 
+section .data
+	message: db "....WOODY....", 0x0a
+	len equ $ - message
+
 section .text
+	global _decode_rc4:function
+	global SIZE_RC4:data
+	global _decode_data:data
 	extern _rc4
-	global _decode_rc4
 
-;void		rc4(const void *key, int key_size, char *plain, int plain_len)
-;void		decode_rc4(const void *key, int size_key, uint32_t *addr_tab, int *size_entry, int nb_entry)
+	SIZE_RC4 dd _decode_rc4 - _decode_data
 
-;initalisation
 _decode_rc4:
+
+writeWoody:
+	push rdi
+	push rsi
+	push rdx
+	push rax
+
+	lea rsi, [message]
+	mov rdx, 0x0e			;size msg
+	mov rax, 1				;syscall write
+	mov rdi, 1
+	syscall
+
+	pop rax
+	pop rdx
+	pop rsi
+	pop rdi
+
+;void		decode_rc4(const void *key, int key_len)
+;void		rc4(const void *key, int key_len, char *plain, int plain_len)
+decode:
 	push rdi
 	push rsi
 	push rdx
 	push rcx
-	push r8
-	push r9
 
-	xor r9, r9			;loop idx
-
-loop:
+	lea rdx, [addr]
+	lea rcx, [size]
 	call _rc4
-	inc r9
-	cmp r9, r8
-	jne inc_data
-	jmp end
-
-inc_data:
-	inc rdx
-	inc rcx
-	jmp loop
 
 end:
-	pop r9
-	pop r8
 	pop rcx
 	pop rdx
 	pop rsi
 	pop rdi
 	ret
+
+_decode_data:
+	addr: dq 0
+	size: dd 0
