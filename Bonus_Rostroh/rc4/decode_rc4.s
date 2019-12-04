@@ -39,8 +39,10 @@ decode:
 	push rdx
 	push rcx
 
-	lea rdx, [addr]
-	lea rcx, [size]
+	lea rdi, [key_addr]
+	lea rsi, [key_size]
+	lea rdx, [cyph_addr]
+	lea rcx, [cyph_size]
 	call _rc4
 
 end:
@@ -51,5 +53,7 @@ end:
 	ret
 
 _decode_data:
-	addr: dq 0
-	size: dd 0
+	key_addr: dp 0
+	key_size: dd 0
+	cyph_addr: dq 0
+	cyph_size: dd 0
