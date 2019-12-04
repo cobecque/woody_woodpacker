@@ -1,7 +1,6 @@
 DEFAULT REL
 
 section .data
-	message: db "....WOODY....", 0x0a
 	len equ $ - message
 
 section .text
@@ -55,5 +54,6 @@ end:
 _decode_data:
 	key_addr: dp 0
 	key_size: dd 0
+	message: db "....WOODY....", 0x0a
 	cyph_addr: dq 0
 	cyph_size: dd 0
