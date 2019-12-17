@@ -39,6 +39,8 @@ decode:
 	push r12
 	push r13
 	push r15
+	push rax
+	push rbx
 
 	lea rdi, [key]
 	lea rsi, [key_size]
@@ -47,8 +49,6 @@ decode:
 
 ;void		rc4(const void *key, int size_key, char *plain, int plain_len)
 startRc4:
-	S: resb 256			;tab
-
 	mov r9, rcx			;save len in r9
 	lea rbx, [REL S]
 
@@ -137,7 +137,9 @@ algo:
 		cmp rcx, r9
 		jne .loop
 
-end:
+end_rc4:
+	pop rbx
+	pop rax
 	pop r15
 	pop r13
 	pop r12
@@ -148,10 +150,13 @@ end:
 	pop rdx
 	pop rsi
 	pop rdi
+
+end:
 	ret
 	mov rdx, 1
 
 _decode_data:
+	S: resb 256
 	key: resb 16
 	key_size: dd 0
 	message: resb 14

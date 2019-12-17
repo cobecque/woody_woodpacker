@@ -6,7 +6,7 @@
 #    By: cobecque <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/18 11:55:23 by cobecque          #+#    #+#              #
-#    Updated: 2019/12/02 17:52:30 by cobecque         ###   ########.fr        #
+#    Updated: 2019/12/04 18:04:32 by cobecque         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,7 +54,8 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 
-ASMF =	rc4.s
+ASMF =	rc4.s\
+		decode_rc4.s
 
 INC =	woody.h
 

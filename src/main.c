@@ -6,7 +6,7 @@
 /*   By: cobecque <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 06:43:18 by cobecque          #+#    #+#             */
-/*   Updated: 2019/12/04 17:36:04 by cobecque         ###   ########.fr       */
+/*   Updated: 2019/12/04 19:20:13 by cobecque         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,13 @@ int			init_rc4(t_rc4 *var, t_parser inf)
 
 void		fill_code_cave(t_env *e, int end, t_rc4 var)
 {
+	Elf64_Phdr	*phdr;
 	uint64_t	addr;
 	//char		buf[buff_size];
 	//void		*file;
 	//int			fd;
 	int			size;
+	int			i;
 	char		*message;
 
 	message = NULL;
@@ -152,6 +154,21 @@ void		fill_code_cave(t_env *e, int end, t_rc4 var)
 	if (!(e->fwoody.content = (void *)malloc(e->file.size)))
 		return ;
 	e->header->e_entry = e->new_entry;
+	size = 0;
+	i = 0;
+	while (size < e->header->e_phnum)
+	{
+		phdr = (Elf64_Phdr *)(e->file.content + e->header->e_ehsize + (e->header->e_phentsize * size));
+		if (phdr->p_type == PT_LOAD && i == 0)
+		{
+			i++;
+			phdr->p_flags |= PF_W;
+			phdr->p_filesz += 256 + var.key_len + sizeof(int) * 2 + strlen(message) + 0x04 + 0x05 + SIZE_RC4 + 1;
+			phdr->p_memsz += 256 + var.key_len + sizeof(int) * 2 + strlen(message) + 0x04 + 0x05 + SIZE_RC4 + 1;
+			printf("mdr %lx\n", phdr->p_filesz);
+		}
+		size++;
+	}
 	memcpy(e->fwoody.content, e->file.content, e->file.size);
 	memcpy(e->fwoody.content, e->header, e->header->e_ehsize);
 	e->fwoody = encrypt_woody(e, var);
@@ -193,6 +210,7 @@ void		fill_code_cave(t_env *e, int end, t_rc4 var)
 	addr = e->old_entry - (e->new_entry + 0x05 + 0x11e + 0x10);
 	memcpy(e->fwoody.content + end + 0x11e + 0x11, &addr, 4);*/
 	printf("ici pour la fucking size %d\n", SIZE_RC4);
+	printf("entry %lx\n", e->new_entry);
 	printf("addr %lx size %x\n", e->addr_encrypt, e->size_encrypt);
 	printf("%s\n", message);
 	memcpy(e->fwoody.content + end, &(_decode_rc4), SIZE_RC4);
@@ -200,12 +218,14 @@ void		fill_code_cave(t_env *e, int end, t_rc4 var)
 	printf("debug\n");
 	size = SIZE_RC4 + end - 0x05;
 	memset(e->fwoody.content + size, 0xe9, 0x1);
-	addr = 42;
+	addr = 42 + 256;
 	memcpy(e->fwoody.content + size + 0x01, &addr, 0x04);
 
 	printf("%lx\n", addr);
 
 	size += 0x05;
+	memset(e->fwoody.content + size, 0, 256);
+	size += 256;
 	memcpy(e->fwoody.content + size, var.key, var.key_len);
 
 	size += var.key_len;
