@@ -34,16 +34,24 @@ t_file_inf			encrypt_woody(t_env *e, t_rc4 var)
 	while (i < SH_NUM)
 	{
 		ft_memcpy(&scthdr, FWOODY + SH_OFF + SH_ENTSIZE * i, sizeof(Elf64_Shdr));
-		if (scthdr.sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+		/*if (scthdr.sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
 		{
 			printf("off %lx\n", scthdr.sh_offset);
 			if (e->addr_encrypt == 0)
 				e->addr_encrypt = scthdr.sh_offset;
 			last_addr = scthdr.sh_offset;
 			size = scthdr.sh_size;
+		}*/
+		if (scthdr.sh_offset == 0x580)
+		{
+			e->addr_encrypt = scthdr.sh_offset;
+			size = scthdr.sh_size;
+			last_addr = scthdr.sh_offset;
 		}
 		i++;
 	}
+	for (int j = 0; j < var.key_len; j++)
+		printf("%X ", var.key[j]);
 	e->size_encrypt = (int)(last_addr - e->addr_encrypt) + size;
 	_rc4(var.key, var.key_len, (char *)(FWOODY + e->addr_encrypt), e->size_encrypt);
 	return (e->fwoody);
